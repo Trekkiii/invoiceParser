@@ -1,4 +1,4 @@
-package com.github.ittalks.pdf;
+package com.github.ittalks.example.pdf;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
