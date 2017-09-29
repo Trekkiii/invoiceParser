@@ -3,3 +3,4 @@
 *.iml
 target/
 /invoice-parser/invoices/
+/invoice-parser-core/invoices/

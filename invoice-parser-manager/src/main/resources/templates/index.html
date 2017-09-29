@@ -1,0 +1,26 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
+    <style type="text/css">
+        body{
+            margin: 50px;
+        }
+    </style>
+    <title>电子发票查验</title>
+</head>
+<body>
+<form method="POST" enctype="multipart/form-data" action="./upload">
+    电子发票: <input type="file" name="file" accept="image/jpeg,image/jpg,image/png,image/bmp,application/pdf"/><br/><br/>
+    <input type="submit" value="上传"/> <font color="gray"><small>支持电子发票pdf和发票左上角的二维码截图</small></font>
+</form>
+<hr color="#f1f1f1"/>
+<form method="POST" enctype="multipart/form-data" action="./analyze">
+    下载地址(仅支持pdf): <p></p><textarea name="pdfDownloadAddress" cols="35" rows="6" placeholder="请输入电子发票的下载地址"></textarea><br/><br/>
+    <input type="submit" value="提交"/>
+</form>
+<p></p>
+<hr color="#f1f1f1"/>
+<p></p><font color="#9b9b9b"><small>如有不能识别的情况，可将信息发送至 <a href='mailto:631521383@qq.cn'>631521383@qq.cn</a></small></font>
+</body>
+</html>
