@@ -5,7 +5,7 @@
 
 	<parent>
 		<artifactId>invoiceParser</artifactId>
-		<groupId>com.github.ittalks</groupId>
+		<groupId>com.github.fnpac</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
@@ -15,7 +15,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.ittalks</groupId>
+			<groupId>com.github.fnpac</groupId>
 			<artifactId>invoice-parser-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
