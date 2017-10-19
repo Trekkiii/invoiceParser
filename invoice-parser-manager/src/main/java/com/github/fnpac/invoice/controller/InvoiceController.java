@@ -44,7 +44,7 @@ public class InvoiceController {
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
-    public Object upload(@RequestParam("file") MultipartFile file) throws IOException {
+    public Object upload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return ErrorCode.FILE_EMPTY;
         }
@@ -65,13 +65,15 @@ public class InvoiceController {
         // 文件上传后的路径
         String filePath = "tmpUpload/";
         fileName = UUID.randomUUID() + suffixName;
-        File tmpFile = new File(filePath + fileName).getCanonicalFile();
-        // 检测是否存在目录
-        if (!tmpFile.getParentFile().exists()) {
-            tmpFile.getParentFile().mkdirs();
-        }
 
+        File tmpFile = null;
         try {
+            tmpFile = new File(filePath + fileName).getCanonicalFile();
+            // 检测是否存在目录
+            if (!tmpFile.getParentFile().exists()) {
+                tmpFile.getParentFile().mkdirs();
+            }
+
             file.transferTo(tmpFile);
             JSONObject result = invoiceParser.parsePdfByQrcode(tmpFile.getAbsolutePath(), false);
             if (result != null) {
@@ -80,14 +82,16 @@ public class InvoiceController {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            tmpFile.delete();
+            if (tmpFile != null) {
+                tmpFile.delete();
+            }
         }
         return ErrorCode.ERROR_UNKNOWN;
     }
 
     @RequestMapping(value = "/analyze", method = RequestMethod.POST)
     @ResponseBody
-    public Object recognizeByUrl(@Body String pdfDownloadUrl) {
+    public Object analyze(@RequestParam("pdfDownloadUrl") String pdfDownloadUrl) {
         if (StringUtils.isEmpty(pdfDownloadUrl)) {
             return ErrorCode.ILLARGUMENT;
         }

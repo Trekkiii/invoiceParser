@@ -178,7 +178,8 @@ public class InvoiceParserTest {
     }
 
     @Test
-    public void invoiceParserByTextMultiTest() throws URISyntaxException, UnsupportedEncodingException, FileNotFoundException, InterruptedException {
+    public void invoiceParserByTextMultiTest()
+            throws URISyntaxException, UnsupportedEncodingException, FileNotFoundException, NestedException, InterruptedException {
         InvoiceParser invoiceParser = new InvoiceParser.Builder().build();
 
         File file = new File("invoices");

@@ -76,4 +76,14 @@ public class NestedException extends RuntimeException {
         }
         return t;
     }
+
+    @Override
+    public synchronized Throwable getCause() {
+        return super.getCause();
+    }
+
+    @Override
+    public void printStackTrace() {
+        super.printStackTrace();
+    }
 }

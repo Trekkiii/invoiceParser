@@ -72,7 +72,7 @@ public class InvoiceHandler {
         return null;
     }
 
-    public static InvoiceInfo getInvoice(String file) throws FileNotFoundException {
+    public static InvoiceInfo getInvoice(String file) throws FileNotFoundException, NestedException {
         // 待解析PDF
         File pdfFile = new File(file);
         if (!pdfFile.exists()) {

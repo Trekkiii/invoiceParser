@@ -3,6 +3,7 @@ package com.github.fnpac.invoice.core;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.fnpac.invoice.common.exception.NestedException;
 import com.github.fnpac.invoice.core.handler.InvoiceHandler;
 import com.github.fnpac.invoice.core.handler.QrcodeHandler;
 import com.github.fnpac.invoice.core.model.InvoiceInfo;
@@ -100,10 +101,10 @@ public class InvoiceParser {
      * @param file 文件路径
      * @return
      * @throws FileNotFoundException
+     * @throws NestedException
      */
-    public InvoiceInfo parsePdfByText(String file) throws FileNotFoundException {
-        InvoiceInfo invoiceInfo = InvoiceHandler.getInvoice(file);
-        return invoiceInfo;
+    public InvoiceInfo parsePdfByText(String file) throws FileNotFoundException, NestedException {
+        return InvoiceHandler.getInvoice(file);
     }
 
     private void leshuiRequestAsync(Call<JSONObject> result) {
