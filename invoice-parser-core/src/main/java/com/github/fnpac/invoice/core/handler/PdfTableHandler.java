@@ -48,11 +48,6 @@ public class PdfTableHandler {
     public static final String Invoice_Seller_Region = "Invoice_Seller_Region";
 
     static {
-
-        // 加载图像处理库
-        nu.pattern.OpenCV.loadShared();
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-
         // 发票信息
         invoiceCode = new LinkedHashMap<>();
         invoiceCode.put(InvoiceInfo.Invoice_Code, "\\S*?\\s*?发票代码\\s*[:：]{1}\\s*(.*)\\s*");
