@@ -16,7 +16,7 @@ public class PdfTextReader {
     private static final Logger logger = Logger.getLogger(PdfTextReader.class.getName());
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        File pdfFile = new File(PdfTextReader.class.getClassLoader().getResource("发票.pdf").toURI());
+        File pdfFile = new File(PdfTextReader.class.getClassLoader().getResource("invoices/01100160011116046427.pdf").toURI());
 
         PDDocument document = null;
 

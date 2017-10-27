@@ -3,11 +3,14 @@ package com.github.fnpac.invoice.core;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.fnpac.invoice.common.exception.NestedException;
-import com.github.fnpac.invoice.core.handler.PDFTextHandler;
-import com.github.fnpac.invoice.core.model.InvoiceInfo;
+import com.github.fnpac.invoice.core.handler.PdfTableHandler;
+import com.github.fnpac.invoice.core.handler.PdfTextHandler;
+import com.github.fnpac.invoice.core.models.InvoiceInfo;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.awt.*;
@@ -17,6 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +37,32 @@ public class InvoiceParserTest {
     private static final String provinceRegExp = "(\\S+?)增值.+?发票";
     private static final Rectangle provinceRect = new Rectangle(150, 5, 430 - 150, 70 - 5);
 
-    @Test
+    private static final String TEST_FILENAME = "invoices/011001600211_71710073.pdf";
+    private static final Path TEST_OUT_PATH = Paths.get("D:", "tmp", "pdf_tests");
+    private static PDDocument PDFdoc;
+
+    @Before
+    public void setUp() {
+        try {
+            File file = new File(TEST_FILENAME);
+            PDFdoc = PDDocument.load(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @After
+    public void tearDown() {
+        if (PDFdoc != null) {
+            try {
+                PDFdoc.close();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+    }
+
+    //@Test
     public void invoiceParserByQcodeMultiTest() throws URISyntaxException, UnsupportedEncodingException, FileNotFoundException, InterruptedException {
         InvoiceParser invoiceParser = new InvoiceParser.Builder().
                 success(obj -> logger.info("解析结果：" + JSON.toJSONString(obj))).
@@ -77,7 +107,7 @@ public class InvoiceParserTest {
         }
     }
 
-    @Test
+    //@Test
     public void getProvince() throws FileNotFoundException {
         // 待解析PDF
         File pdfFile = new File("invoices/021001700111_35229425.pdf");
@@ -136,45 +166,44 @@ public class InvoiceParserTest {
 
     @Test
     public void invoiceParserByTextTest() throws FileNotFoundException {
-        for (int i = 0; i < 2; i++) {
-            long startTime = System.currentTimeMillis();
-            // 待解析PDF
-            File pdfFile = new File("invoices/01100160011116046427.pdf");
-            if (!pdfFile.exists()) {
-                throw new FileNotFoundException();
+        long startTime = System.currentTimeMillis();
+        // 待解析PDF
+        File pdfFile = new File("invoices/044031700111_06391637.pdf");
+        if (!pdfFile.exists()) {
+            throw new FileNotFoundException();
+        }
+
+        PDDocument document = null;
+        try {
+            document = PDDocument.load(pdfFile);
+
+            int pagesNumber = document.getNumberOfPages();
+            if (pagesNumber <= 0) {
+                throw new NestedException("can't find pdf pages");
             }
 
-            PDDocument document = null;
-            try {
-                document = PDDocument.load(pdfFile);
+            long startParseTime = System.currentTimeMillis();
+            PdfTextHandler handler = new PdfTextHandler();
+            // 检查pdf大小比例是否合法
+            handler.check(document);
 
-                int pagesNumber = document.getNumberOfPages();
-                if (pagesNumber <= 0) {
-                    throw new NestedException("can't find pdf pages");
-                }
-
-                long startParseTime = System.currentTimeMillis();
-                PDFTextHandler handler = new PDFTextHandler();
-                // 检查pdf大小比例是否合法
-                handler.check(document);
-
-                // 解析文本
-                InvoiceInfo invoiceInfo = handler.parsePageByTemplate(document.getPage(0));
-                logger.info(JSONObject.toJSONString(invoiceInfo));
-                logger.info("总时间：" + String.valueOf(System.currentTimeMillis() - startTime));
-                logger.info("解析用时：" + String.valueOf(System.currentTimeMillis() - startParseTime));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (document != null) {
-                    try {
-                        document.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            // 解析文本
+            InvoiceInfo invoiceInfo = handler.parsePageByTemplate(null, document.getPage(0));
+            logger.info(JSONObject.toJSONString(invoiceInfo));
+            logger.info("总时间：" + String.valueOf(System.currentTimeMillis() - startTime));
+            logger.info("解析用时：" + String.valueOf(System.currentTimeMillis() - startParseTime));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (document != null) {
+                try {
+                    document.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
+
     }
 
     @Test
@@ -185,17 +214,54 @@ public class InvoiceParserTest {
         File file = new File("invoices");
         File[] files = file.listFiles();
         for (File f : files) {
-            InvoiceInfo invoiceInfo = invoiceParser.parsePdfByText(f.getAbsolutePath());
+            InvoiceInfo invoiceInfo = invoiceParser.parsePdfByText(null, f.getAbsolutePath());
             logger.info(JSONObject.toJSONString(invoiceInfo));
         }
     }
 
-    @Test
-    public void testReg() {
+    //@Test
+    public void regTest() {
         Pattern pattern = Pattern.compile("价税合计\\s*[\\(（]{1}大写[）\\)]{1}\\s*(\\S*)\\s*[\\(（]{1}小写[）\\)]{1}\\s*(.*)");
         Matcher matcher = pattern.matcher("价税合计 (大写） 贰拾元整 （小写） ￥ 20.00");
         if (matcher.find()) {
             System.out.println("true");
+        }
+    }
+
+    @Test
+    public void parsePdfPage() throws IOException {
+
+        PdfTableHandler parser = new PdfTableHandler();
+        InvoiceInfo invoiceInfo = parser.parsePdfPage(PDFdoc, 1);
+        logger.info(JSON.toJSONString(invoiceInfo));
+    }
+
+    @Test
+    public void parsePdfPages() throws IOException {
+
+        File fileDir = new File("invoices");
+        File[] files = fileDir.listFiles();
+        for (File file : files) {
+            PDDocument document = PDDocument.load(file);
+            PdfTableHandler parser = new PdfTableHandler();
+            InvoiceInfo invoiceInfo = parser.parsePdfPage(document, 1);
+            logger.info(JSON.toJSONString(invoiceInfo));
+        }
+    }
+
+    @Test
+    public void regTest2() {
+        String text = "名    称: 北京金山办公软件股份有限公司\r\n" +
+                "纳税人识别号: 91110108587665983J\r\n" +
+                "地 址、 电 话:\r\n" +
+                "开户行及账号:";
+        String regExp = "名\\s*称\\s*[:：]{1}\\s*(.*)\\s*纳税人识别号\\s*[:：]{1}\\s*(.*)\\s*地\\s*址[、]\\s*电\\s*话\\s*[:：]{1}\\s*(.*)\\s*开户行及账号\\s*[:：]{1}\\s*(.*)";
+        Pattern pattern = Pattern.compile(regExp);
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()) {
+            System.out.println("true");
+        } else {
+            System.out.println("false");
         }
     }
 }

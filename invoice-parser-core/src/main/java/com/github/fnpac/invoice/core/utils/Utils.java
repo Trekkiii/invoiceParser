@@ -2,12 +2,15 @@ package com.github.fnpac.invoice.core.utils;
 
 import com.github.fnpac.invoice.common.exception.NestedException;
 import com.github.fnpac.invoice.common.result.ErrorCode;
+import org.apache.pdfbox.io.IOUtils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.springframework.http.HttpStatus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -16,9 +19,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by 刘春龙 on 2017/9/29.
+ * Created by 刘春龙 on 2017/10/24.
  */
-public class ImageTool {
+public class Utils {
+
+    private Utils() {
+    }
+
+    private static final String tmpUploadPath = "/data/tmpUpload/";
 
     public static String downloadPdfFile(String url) {
         FileOutputStream out = null;
@@ -60,15 +68,13 @@ public class ImageTool {
                 }
             }
             if (localFileName == null || !localFileName.endsWith(".pdf")) {
-                throw new NestedException(ErrorCode.INVALID_FILE_TYPE);
+                throw new NestedException(ErrorCode.INVALID_FILE_SUFFIX);
             }
 
-            // 文件上传后的路径
-            String filePath = "tmpDownload/";
             // 解决中文问题，liunx下中文路径，图片显示问题
             localFileName = UUID.randomUUID() + ".pdf";
 
-            File file = new File(filePath + localFileName).getCanonicalFile();
+            File file = new File(tmpUploadPath + localFileName).getCanonicalFile();
 
             // 检测是否存在目录
             if (!file.getParentFile().exists()) {
@@ -94,7 +100,7 @@ public class ImageTool {
             e.printStackTrace();
         } finally {
             try {
-                if(in != null){
+                if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
@@ -102,7 +108,7 @@ public class ImageTool {
             }
 
             try {
-                if(out != null){
+                if (out != null) {
                     out.close();
                 }
             } catch (IOException e) {
@@ -119,5 +125,54 @@ public class ImageTool {
             return matcher.group(1);
         }
         return content;
+    }
+
+    /**
+     * 将BufferedImage转换为灰度OpenCV Mat
+     *
+     * @param inImg Buffered Image
+     * @return org.opencv.core.Mat
+     * @throws IOException
+     */
+    public static Mat bufferedImage2GrayscaleMat(BufferedImage inImg) throws IOException {
+        return bufferedImage2Mat(inImg, Imgcodecs.IMREAD_GRAYSCALE);
+    }
+
+    /**
+     * 使用自定义标志将BufferedImage转换为OpenCV Mat
+     *
+     * @param inImg Buffered Image
+     * @param flag  org.opencv.imgcodecs.Imgcodecs flag
+     * @return org.opencv.core.Mat
+     * @throws IOException
+     */
+    public static Mat bufferedImage2Mat(BufferedImage inImg, int flag) throws IOException {
+        return inputStream2Mat(bufferedImage2InputStream(inImg), flag);
+    }
+
+    /**
+     * 将BufferedImage转换为InputStream
+     *
+     * @param inImg Buffered Image
+     * @return java.io.InputStream
+     * @throws IOException
+     */
+    public static InputStream bufferedImage2InputStream(BufferedImage inImg) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(inImg, "png", os);
+        return new ByteArrayInputStream(os.toByteArray());
+    }
+
+    /**
+     * 将InputStream转换为OpenCV Mat
+     *
+     * @param stream java.io.InputStream
+     * @param flag   org.opencv.imgcodecs.Imgcodecs flag
+     * @return org.opencv.core.Mat
+     * @throws IOException
+     */
+    public static Mat inputStream2Mat(InputStream stream, int flag) throws IOException {
+        byte[] byteBuff = IOUtils.toByteArray(stream);
+        return Imgcodecs.imdecode(new MatOfByte(byteBuff), flag);
     }
 }

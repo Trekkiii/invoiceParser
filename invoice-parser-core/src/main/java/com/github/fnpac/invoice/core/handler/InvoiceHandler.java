@@ -1,7 +1,7 @@
 package com.github.fnpac.invoice.core.handler;
 
 import com.github.fnpac.invoice.common.exception.NestedException;
-import com.github.fnpac.invoice.core.model.InvoiceInfo;
+import com.github.fnpac.invoice.core.models.InvoiceInfo;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -23,6 +23,7 @@ public class InvoiceHandler {
 
     private static final Logger logger = Logger.getLogger(InvoiceHandler.class.getName());
 
+    @Deprecated
     public static List<BufferedImage> getQrcode(String file) throws FileNotFoundException {
 
         // 待解析PDF
@@ -72,7 +73,9 @@ public class InvoiceHandler {
         return null;
     }
 
-    public static InvoiceInfo getInvoice(String file) throws FileNotFoundException, NestedException {
+    @Deprecated
+    public static InvoiceInfo getInvoiceByText(String sender, String file)
+            throws FileNotFoundException, NestedException {
         // 待解析PDF
         File pdfFile = new File(file);
         if (!pdfFile.exists()) {
@@ -82,18 +85,47 @@ public class InvoiceHandler {
         PDDocument document = null;
         try {
             document = PDDocument.load(pdfFile);
-
-            int pagesNumber = document.getNumberOfPages();
-            if (pagesNumber <= 0) {
+            if (document.getNumberOfPages() <= 0) {
                 throw new NestedException("can't find pdf pages");
             }
 
-            PDFTextHandler handler = new PDFTextHandler();
+            PdfTextHandler handler = new PdfTextHandler();
             // 检查pdf大小比例是否合法
             handler.check(document);
 
             // 解析文本
-            return handler.parsePageByTemplate(document.getPage(0));
+            return handler.parsePageByTemplate(sender, document.getPage(0));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (document != null) {
+                try {
+                    document.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    public static InvoiceInfo getInvoiceWithOpenCV(String sender, String file)
+            throws FileNotFoundException, NestedException {
+        // 待解析PDF
+        File pdfFile = new File(file);
+        if (!pdfFile.exists()) {
+            throw new FileNotFoundException();
+        }
+
+        PDDocument document = null;
+        try {
+            document = PDDocument.load(pdfFile);
+            if (document.getNumberOfPages() <= 0) {
+                throw new NestedException("can't find pdf pages");
+            }
+
+            PdfTableHandler parser = new PdfTableHandler();
+            return parser.parsePdfPage(document, 1);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

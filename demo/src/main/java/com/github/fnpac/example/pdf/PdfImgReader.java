@@ -3,7 +3,9 @@ package com.github.fnpac.example.pdf;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import javax.imageio.ImageIO;
@@ -19,17 +21,17 @@ import java.util.logging.Logger;
  */
 public class PdfImgReader {
 
-    private static final Logger logger = Logger.getLogger(PdfTextReader.class.getName());
+    private static final Logger logger = Logger.getLogger(PdfImgReader.class.getName());
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         // 待解析PDF
-        File pdfFile = new File(PdfTextReader.class.getClassLoader().getResource("发票.pdf").toURI());
+        File pdfFile = new File(PdfImgReader.class.getClassLoader().getResource("invoices/01100160021162132031.pdf").toURI());
 
         // 空白PDF
-//        File pdfFile_out = new File("img.pdf");
+        File pdfFile_out = new File("out.pdf");
 
         PDDocument document = PDDocument.load(pdfFile);
-//        PDDocument document_out = new PDDocument();
+        PDDocument document_out = new PDDocument();
 
         int pagesNumber = document.getNumberOfPages();
 

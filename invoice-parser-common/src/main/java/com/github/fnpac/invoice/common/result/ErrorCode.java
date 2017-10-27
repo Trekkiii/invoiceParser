@@ -19,6 +19,7 @@ public class ErrorCode {
     public static final ErrorMessage INVALID_FILE_TYPE = registerErrorMsg("I01001", "不支持的文件类型", HttpStatus.BAD_REQUEST);
     public static final ErrorMessage INVALID_QR_CONTENT = registerErrorMsg("I01002", "无效的二维码数据", HttpStatus.BAD_REQUEST);
     public static final ErrorMessage FILE_EMPTY = registerErrorMsg("I01003", "文件内容为空", HttpStatus.BAD_REQUEST);
+    public static final ErrorMessage INVALID_FILE_SUFFIX = registerErrorMsg("I01004", "无效的文件后缀", HttpStatus.BAD_REQUEST);
 
     public static ErrorMessage registerErrorMsg(String errorCode, String errorMsg, HttpStatus httpStatus) {
         return ErrorMessage.create()

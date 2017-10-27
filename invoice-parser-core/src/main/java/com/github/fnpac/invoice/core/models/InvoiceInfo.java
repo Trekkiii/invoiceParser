@@ -1,4 +1,4 @@
-package com.github.fnpac.invoice.core.model;
+package com.github.fnpac.invoice.core.models;
 
 import java.util.HashMap;
 import java.util.Map;

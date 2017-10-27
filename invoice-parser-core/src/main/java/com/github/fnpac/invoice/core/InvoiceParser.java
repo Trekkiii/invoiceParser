@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.fnpac.invoice.common.exception.NestedException;
 import com.github.fnpac.invoice.core.handler.InvoiceHandler;
 import com.github.fnpac.invoice.core.handler.QrcodeHandler;
-import com.github.fnpac.invoice.core.model.InvoiceInfo;
+import com.github.fnpac.invoice.core.models.InvoiceInfo;
+import com.github.fnpac.invoice.core.models.InvoiceQRInfo;
+import com.github.fnpac.invoice.core.net.Error;
 import com.github.fnpac.invoice.core.net.LeShuiService;
 import com.github.fnpac.invoice.core.net.LeShuiServiceProxy;
 import com.github.fnpac.invoice.core.net.Success;
-import com.github.fnpac.invoice.core.model.InvoiceQRInfo;
-import com.github.fnpac.invoice.core.net.Error;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,6 +74,7 @@ public class InvoiceParser {
      * @return
      * @throws FileNotFoundException
      */
+    @Deprecated
     public JSONObject parsePdfByQrcode(String file, boolean isAsync) throws FileNotFoundException {
         List<BufferedImage> images = InvoiceHandler.getQrcode(file);
         if (images != null && images.size() > 0) {
@@ -98,13 +99,31 @@ public class InvoiceParser {
 
     /**
      * 解析pdf文本获取发票信息
+     *
+     * @param sender 发票所属邮件的发件人
      * @param file 文件路径
      * @return
      * @throws FileNotFoundException
      * @throws NestedException
      */
-    public InvoiceInfo parsePdfByText(String file) throws FileNotFoundException, NestedException {
-        return InvoiceHandler.getInvoice(file);
+    @Deprecated
+    public InvoiceInfo parsePdfByText(String sender, String file) throws FileNotFoundException, NestedException {
+        return InvoiceHandler.getInvoiceByText(sender, file);
+    }
+
+    /**
+     * 采用opencv图像识别，解析获取pdf表格坐标
+     *
+     * 解析pdf文本获取发票信息
+     *
+     * @param sender 发票所属邮件的发件人
+     * @param file 文件路径
+     * @return
+     * @throws FileNotFoundException
+     * @throws NestedException
+     */
+    public InvoiceInfo parsePdfWithOpenCV(String sender, String file) throws FileNotFoundException, NestedException {
+        return InvoiceHandler.getInvoiceWithOpenCV(sender, file);
     }
 
     private void leshuiRequestAsync(Call<JSONObject> result) {
@@ -129,6 +148,7 @@ public class InvoiceParser {
         return null;
     }
 
+    @Deprecated
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     public static class LeshuiRequestData {
         String fpdm, FPDM;// 发票代码

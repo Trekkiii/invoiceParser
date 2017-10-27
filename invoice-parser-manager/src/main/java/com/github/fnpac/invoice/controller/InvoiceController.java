@@ -3,8 +3,6 @@ package com.github.fnpac.invoice.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.fnpac.invoice.common.result.APIResult;
 import com.github.fnpac.invoice.common.result.ErrorCode;
-import com.github.fnpac.invoice.core.InvoiceParser;
-import com.github.fnpac.invoice.core.utils.ImageTool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.Body;
 
 import java.io.File;
 import java.io.FileNotFoundException;

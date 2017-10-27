@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 /**
  * Created by 刘春龙 on 2017/9/6.
  */
+@Deprecated
 public class QrcodeHandler {
 
     private static final Logger logger = Logger.getLogger(QrcodeHandler.class.getName());

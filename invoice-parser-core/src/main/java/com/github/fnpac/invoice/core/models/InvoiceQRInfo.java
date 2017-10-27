@@ -1,4 +1,4 @@
-package com.github.fnpac.invoice.core.model;
+package com.github.fnpac.invoice.core.models;
 
 import com.github.fnpac.invoice.common.exception.NestedException;
 import org.apache.commons.lang3.StringUtils;
