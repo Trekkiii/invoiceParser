@@ -78,7 +78,7 @@ public class InvoiceParserTest {
     @Test
     public void getWidthAndHeight() throws FileNotFoundException {
         // 待解析PDF
-        File pdfFile = new File("invoices/滴滴电子发票.pdf");
+        File pdfFile = new File("invoices/上海枫泊电子商务有限公司发票.pdf");
         if (!pdfFile.exists()) {
             throw new FileNotFoundException();
         }
