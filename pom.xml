@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.github.fnpac</groupId>
+    <groupId>com.github.trekkiii</groupId>
     <artifactId>invoiceParser</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
